@@ -6,6 +6,11 @@ api_yamdb
 благодаря чему программа может взаимодействовать с другими программами.
 Это позволяет расширить функциональность проекта и связывать его с другими.
 ### Запуск проекта
+- Клойнируйте репозиторий и перейдите в него
+```
+git clone https://github.com/linaartmv/api_yamdb.git
+cd api_yamdb
+```
 - Установите и активируйте виртуальное окружение
 ```
 python -m venv venv
@@ -17,7 +22,7 @@ pip install -r requirements.txt
 ``` 
 - Выполните миграции:
 ```
-cd api_yamdb/
+python manage.py makemigrations
 python manage.py migrate
 ```
 - Загрузите в БД тестовые записи (опционально):
@@ -35,8 +40,8 @@ http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/
 для добавления отзыва: 
 ```
 {
-"text": "Интересная книга!",
-"score": 8
+    "text": "Интересная книга!",
+    "score": 8
 }
 ```
 
@@ -44,11 +49,11 @@ http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/
 
 ```
 {
-"id": 1,
-"text": "Интересная книга!",
-"author": "natalya",
-"score": 8,
-"pub_date": "2023-05-27T14:15:22Z"
+    "id": 1,
+    "text": "Интересная книга!",
+    "author": "natalya",
+    "score": 8,
+    "pub_date": "2023-05-27T14:15:22Z"
 }
 ```
 - GET-запрос на адрес http://127.0.0.1:8000/api/v1/users/{username}/ для получения пользователя по username.
@@ -57,17 +62,20 @@ http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/
 
 ```
 {
-"username": "string",
-"email": "user@example.com",
-"first_name": "string",
-"last_name": "string",
-"bio": "string",
-"role": "user"
+    "username": "string",
+    "email": "user@example.com",
+    "first_name": "string",
+    "last_name": "string",
+    "bio": "string",
+    "role": "user"
 }
 ```
+### Документация
+- Документация к API доступна после запуска проекта по ссылке: http://127.0.0.1:8000/redoc/
 ### Технологии
-- Python 3.7
-- Django 3.2
+- [Python 3.7](https://www.python.org/downloads/)
+- [Django 3.2](https://www.djangoproject.com/)
+
 ### Авторы
 - Ангелина Артемьева (тимлид),
 github: LinaArtmv
