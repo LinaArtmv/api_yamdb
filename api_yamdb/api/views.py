@@ -4,8 +4,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, permissions, status, views, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
-from rest_framework.mixins import (CreateModelMixin, DestroyModelMixin,
-                                   ListModelMixin)
+from rest_framework.mixins import CreateModelMixin
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Category, Genre, Review, Title
@@ -13,6 +12,7 @@ from users.models import User
 
 from api_yamdb.settings import DEFAULT_FROM_EMAIL
 
+from .mixins import ListCreateDestroyViewSet
 from .filters import TitleFilter
 from .permissions import (IsAdmin, IsAdminOrReadOnly,
                           IsAuthorModeratorAdminOrReadOnly)
@@ -104,9 +104,8 @@ class UserAuthorisation(views.APIView):
                         status=status.HTTP_400_BAD_REQUEST)
 
 
-class CategoryViewSet(ListModelMixin, CreateModelMixin,
-                      DestroyModelMixin, viewsets.GenericViewSet):
-    """Вьюсет категорий. GET (list), POST, DELETE"""
+class CategoryViewSet(ListCreateDestroyViewSet):
+    """Вьюсет категорий."""
 
     lookup_field = 'slug'
     queryset = Category.objects.all()
@@ -116,9 +115,8 @@ class CategoryViewSet(ListModelMixin, CreateModelMixin,
     permission_classes = (IsAdminOrReadOnly,)
 
 
-class GenreViewSet(ListModelMixin, CreateModelMixin,
-                   DestroyModelMixin, viewsets.GenericViewSet):
-    """Вьюсет жанров. GET (list), POST, DELETE"""
+class GenreViewSet(ListCreateDestroyViewSet):
+    """Вьюсет жанров."""
 
     lookup_field = 'slug'
     queryset = Genre.objects.all()

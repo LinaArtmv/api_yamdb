@@ -6,8 +6,6 @@ class IsAdminOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         return (
             request.method in permissions.SAFE_METHODS
-            # У анонимных клиентов нет поля role и возникает ошибка,
-            # приходится дополнительно проверять на аутентификацию
             or (request.user.is_authenticated and request.user.role == 'admin')
         )
 

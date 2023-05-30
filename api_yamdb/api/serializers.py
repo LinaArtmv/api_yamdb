@@ -110,7 +110,6 @@ class TitleReadSerializer(serializers.ModelSerializer):
                   'description', 'genre', 'category')
 
     def get_rating(self, obj):
-        # Получаем словарь со средним значением по полю score
         score_result = obj.reviews.aggregate(Avg('score'))
         rating = score_result['score__avg']
         return rating

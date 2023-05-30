@@ -60,7 +60,6 @@ class Title(models.Model):
     description = models.TextField(
         verbose_name='Описание',
         blank=True)
-    # Ограничение года создания произведения от 0 до текущего года.
     year = models.PositiveIntegerField(
         verbose_name='Год создания',
         validators=[MaxValueValidator(dt.datetime.now().year)]
@@ -79,6 +78,12 @@ class GenreTitle(models.Model):
 
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
     title = models.ForeignKey(Title, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['genre', 'title'],
+                                    name='unique_genre_title_records')
+        ]
 
     def __str__(self):
         return f'{self.genre} {self.title}'
