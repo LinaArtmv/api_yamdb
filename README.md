@@ -78,8 +78,8 @@ http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/
 
 ### Авторы
 - Ангелина Артемьева (тимлид),
-github: LinaArtmv
+github: [LinaArtmv](https://github.com/LinaArtmv)
 - Александр Стерлягов,
-github: AlexSt3
+github: [AlexSt3](https://github.com/AlexSt3)
 - Наталья Фанькина,
-github: NatalyaF8
+github: [NatalyaF8](https://github.com/NatalyaF8)
