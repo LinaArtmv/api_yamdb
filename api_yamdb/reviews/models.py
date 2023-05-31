@@ -82,6 +82,12 @@ class GenreTitle(models.Model):
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
     title = models.ForeignKey(Title, on_delete=models.CASCADE)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['genre', 'title'],
+                                    name='unique_genre_title_records')
+        ]
+
     def __str__(self):
         return f'{self.genre} {self.title}'
 
