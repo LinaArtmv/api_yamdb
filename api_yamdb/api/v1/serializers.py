@@ -47,14 +47,11 @@ class UserTokenSerializer(serializers.Serializer):
     confirmation_code = serializers.CharField(max_length=150, required=True)
 
 
-class UserMeSerializer(serializers.ModelSerializer):
+class UserMeSerializer(UserSerializer):
     """Сериализация данных для эндпоинта users/me/."""
 
     role = serializers.ChoiceField(choices=['user', 'moderator', 'admin'],
                                    default='user')
-    username = serializers.RegexField(max_length=150,
-                                      required=True,
-                                      regex=r'^[\w.@+-]+$')
     first_name = serializers.CharField(max_length=150, required=False)
     last_name = serializers.CharField(max_length=150, required=False)
 
@@ -62,23 +59,6 @@ class UserMeSerializer(serializers.ModelSerializer):
         model = User
         fields = ('username', 'email', 'first_name',
                   'last_name', 'bio', 'role')
-
-    def validate(self, data):
-        """Запрещает пользователям присваивать себе имя me
-        и использовать повторные username и email."""
-        if data.get('username') == 'me':
-            raise serializers.ValidationError(
-                'Использовать имя me запрещено'
-            )
-        if User.objects.filter(username=data.get('username')):
-            raise serializers.ValidationError(
-                'Пользователь с таким username уже существует'
-            )
-        if User.objects.filter(email=data.get('email')):
-            raise serializers.ValidationError(
-                'Пользователь с таким email уже существует'
-            )
-        return data
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -110,7 +90,6 @@ class TitleReadSerializer(serializers.ModelSerializer):
                   'description', 'genre', 'category')
 
     def get_rating(self, obj):
-        # Получаем словарь со средним значением по полю score
         score_result = obj.reviews.aggregate(Avg('score'))
         rating = score_result['score__avg']
         return rating

@@ -80,7 +80,7 @@ class UserRegistration(CreateModelMixin, viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class UserAuthorisation(views.APIView):
+class UserAuthenticationView(views.APIView):
     """ По username и confirmation_code выдает JWT-token."""
 
     permission_classes = (permissions.AllowAny,)
