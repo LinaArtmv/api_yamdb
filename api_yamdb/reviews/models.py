@@ -5,6 +5,9 @@ from django.db import models
 from users.models import User
 
 
+NUMBER_OF_SYMBOLS = 15
+
+
 class Category(models.Model):
     """Модель категорий."""
 
@@ -20,7 +23,7 @@ class Category(models.Model):
         verbose_name_plural = 'Категории'
 
     def __str__(self):
-        return self.name[:15]
+        return self.name[:NUMBER_OF_SYMBOLS]
 
 
 class Genre(models.Model):
@@ -37,7 +40,7 @@ class Genre(models.Model):
         verbose_name_plural = 'Жанры'
 
     def __str__(self):
-        return self.name[:15]
+        return self.name[:NUMBER_OF_SYMBOLS]
 
 
 class Title(models.Model):
@@ -70,7 +73,7 @@ class Title(models.Model):
         verbose_name_plural = 'Произведения'
 
     def __str__(self):
-        return self.name[:15]
+        return self.name[:NUMBER_OF_SYMBOLS]
 
 
 class GenreTitle(models.Model):
@@ -125,7 +128,7 @@ class Review(models.Model):
         ]
 
     def __str__(self):
-        return self.text[:15]
+        return self.text[:NUMBER_OF_SYMBOLS]
 
 
 class Comment(models.Model):
@@ -154,4 +157,4 @@ class Comment(models.Model):
         verbose_name = 'Комментарий'
 
     def __str__(self):
-        return self.text[:15]
+        return self.text[:NUMBER_OF_SYMBOLS]
