@@ -4,9 +4,12 @@ from django.db import models
 
 class User(AbstractUser):
     """Перепределили базовую модель User."""
-    USER_ROLES = [('user', 'user'),
-                  ('moderator', 'moderator'),
-                  ('admin', 'admin'), ]
+    USER = 'USER'
+    MODERATOR = 'MODERATOR'
+    ADMIN = 'ADMIN'
+    USER_ROLES = [(USER, 'user'),
+                  (MODERATOR, 'moderator'),
+                  (ADMIN, 'admin'), ]
     username = models.CharField(max_length=150, unique=True)
     email = models.EmailField(max_length=254, unique=True)
     first_name = models.CharField(max_length=150, blank=True)
@@ -14,7 +17,15 @@ class User(AbstractUser):
     bio = models.TextField(blank=True)
     role = models.CharField(max_length=9,
                             choices=USER_ROLES,
-                            default='user')
+                            default=USER)
+
+    @property
+    def is_admin(self):
+        return self.role == 'admin'
+
+    @property
+    def is_moderator(self):
+        return self.role == 'moderator'
 
     def __str__(self):
         return self.username

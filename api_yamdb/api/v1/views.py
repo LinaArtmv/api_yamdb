@@ -4,8 +4,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, permissions, status, views, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
-from rest_framework.mixins import (CreateModelMixin, DestroyModelMixin,
-                                   ListModelMixin)
+from rest_framework.mixins import CreateModelMixin
+from .mixins import ListCreateDestroyViewSet
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Category, Genre, Review, Title
@@ -80,7 +80,7 @@ class UserRegistration(CreateModelMixin, viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class UserAuthorisation(views.APIView):
+class UserAuthenticationView(views.APIView):
     """ По username и confirmation_code выдает JWT-token."""
 
     permission_classes = (permissions.AllowAny,)
@@ -104,9 +104,8 @@ class UserAuthorisation(views.APIView):
                         status=status.HTTP_400_BAD_REQUEST)
 
 
-class CategoryViewSet(ListModelMixin, CreateModelMixin,
-                      DestroyModelMixin, viewsets.GenericViewSet):
-    """Вьюсет категорий. GET (list), POST, DELETE"""
+class CategoryViewSet(ListCreateDestroyViewSet):
+    """Вьюсет категорий."""
 
     lookup_field = 'slug'
     queryset = Category.objects.all()
@@ -116,9 +115,8 @@ class CategoryViewSet(ListModelMixin, CreateModelMixin,
     permission_classes = (IsAdminOrReadOnly,)
 
 
-class GenreViewSet(ListModelMixin, CreateModelMixin,
-                   DestroyModelMixin, viewsets.GenericViewSet):
-    """Вьюсет жанров. GET (list), POST, DELETE"""
+class GenreViewSet(ListCreateDestroyViewSet):
+    """Вьюсет жанров."""
 
     lookup_field = 'slug'
     queryset = Genre.objects.all()
@@ -149,15 +147,15 @@ class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsAuthorModeratorAdminOrReadOnly,)
 
+    def get_title(self):
+        return get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+
     def get_queryset(self):
-        title_id = self.kwargs.get('title_id')
-        title = get_object_or_404(Title, pk=title_id)
-        return title.reviews.all()
+        return self.get_title().reviews.all()
 
     def perform_create(self, serializer):
-        title_id = self.kwargs.get('title_id')
-        title = get_object_or_404(Title, pk=title_id)
-        serializer.save(author=self.request.user, title=title)
+        serializer.save(author=self.request.user,
+                        title=self.get_title())
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -167,12 +165,11 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsAuthorModeratorAdminOrReadOnly,)
 
+    def get_review(self):
+        return get_object_or_404(Review, pk=self.kwargs.get('review_id'))
+
     def get_queryset(self):
-        review_id = self.kwargs.get('review_id')
-        review = get_object_or_404(Review, pk=review_id)
-        return review.comments.all()
+        return self.get_review().comments.all()
 
     def perform_create(self, serializer):
-        review_id = self.kwargs.get('review_id')
-        review = get_object_or_404(Review, pk=review_id)
-        serializer.save(author=self.request.user, review=review)
+        serializer.save(author=self.request.user, review=self.get_review())
