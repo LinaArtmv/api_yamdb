@@ -1,13 +1,16 @@
 import csv
+import logging
 
 from django.core.management.base import BaseCommand
 from django.shortcuts import get_object_or_404
 from reviews.models import Category, Comment, Genre, GenreTitle, Review, Title
 from users.models import User
 
+logging.basicConfig(level=logging.INFO)
+
 
 def load(model, path, related_models=None,):
-    print(f'Загрузка данных в таблицу {model.__name__}')
+    logging.info(f'Загрузка данных в таблицу {model.__name__}')
     model.objects.all().delete()
 
     with open(path) as file:
@@ -15,12 +18,9 @@ def load(model, path, related_models=None,):
 
         for row in reader:
             try:
-                print(row)
+                logging.info(row)
 
                 if related_models:
-                    # Получает сущность связанной модели
-                    # и передает ее в словарь
-                    # Это ужасно, но я не успел сделать лучше
                     for rel_model in related_models:
                         related_name = rel_model[0]
                         csv_name = rel_model[1]
@@ -31,7 +31,7 @@ def load(model, path, related_models=None,):
 
                 model.objects.create(**row)
             except Exception:
-                print('Ошибка в данных')
+                logging.warning('Ошибка в данных')
 
 
 class Command(BaseCommand):
