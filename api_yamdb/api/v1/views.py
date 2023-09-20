@@ -1,5 +1,4 @@
 from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, permissions, status, views, viewsets
 from rest_framework.decorators import action
@@ -11,8 +10,6 @@ from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Category, Genre, Review, Title
 from users.models import User
 
-from api_yamdb.settings import DEFAULT_FROM_EMAIL
-
 from .filters import TitleFilter
 from .permissions import (IsAdmin, IsAdminOrReadOnly,
                           IsAuthorModeratorAdminOrReadOnly)
@@ -21,6 +18,7 @@ from .serializers import (CategorySerializer, CommentSerializer,
                           TitleReadSerializer, TitleWriteSerializer,
                           UserMeSerializer, UserSerializer,
                           UserTokenSerializer)
+from .tasks import create_user_send_mail
 
 
 class UserViewset(viewsets.ModelViewSet):
@@ -66,18 +64,7 @@ class UserRegistration(CreateModelMixin, viewsets.GenericViewSet):
         """Создает объект класса User и
         отправляет на почту пользователя код подтверждения."""
 
-        serializer = UserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user, _ = User.objects.get_or_create(**serializer.validated_data)
-        email = user.email
-        confirmation_code = default_token_generator.make_token(user)
-
-        send_mail(subject='Код подтверждения',
-                  message=f'Your code: {confirmation_code}',
-                  from_email=DEFAULT_FROM_EMAIL,
-                  recipient_list=(email,))
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return create_user_send_mail.delay(request)
 
 
 class UserAuthenticationView(views.APIView):
